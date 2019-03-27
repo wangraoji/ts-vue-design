@@ -34,7 +34,8 @@ npm i ts-loader typescript tslint tslint-loader tslint-config-standard --save-de
 
 - 找到entry.app 将main.js 改成 main.ts, 顺便把项目文件中的main.js也改成main.ts, 里面内容改变如下
 ```
-/* ./build/webpack.base.conf.js */entry: {
+/* ./build/webpack.base.conf.js */
+entry: {
   app: './src/main.ts'
 }
 
