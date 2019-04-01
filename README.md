@@ -385,8 +385,6 @@ export default class App extends Vue {
 ```
 其他vue修改如上~
 
-```
-
 ### 9. 想玩高端的附上三命大佬的两篇文章
 [vue+ts基础篇](https://segmentfault.com/a/1190000011744210)
 [vue+ts进阶篇](https://segmentfault.com/a/1190000011878086)
