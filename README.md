@@ -210,28 +210,15 @@ module: {
 ### 6. 让 ts 识别 .vue
 由于 TypeScript 默认并不支持 *.vue 后缀的文件，所以在 vue 项目中引入的时候需要创建一个 vue-shim.d.ts 文件，放在项目项目对应使用目录下，例如 src/vue-shim.d.ts
 ```
-import * as lodash from 'lodash'
-import Vue from 'vue'
 // 下面这个意思是告诉 TypeScript *.vue 后缀的文件可以交给 vue 模块来处理。
 // 而在代码中导入 *.vue 文件的时候，需要写上 .vue 后缀。原因还是因为 TypeScript 
 // 默认只识别 *.ts文件， 不识别 *.vue 文件
 // 就比如main.ts 中需要 import App from './App.vue'
 declare module '*.vue' {
+  import Vue from 'vue'
   export default Vue
 }
 
-
-// 声明全局方法
-declare module 'vue/types/vue' {
-  interface Vue {
-    $store: any,
-  }
-}
-
-// 全局变量设置 --- 这时候再页面使用_.xxx是会报错的，下面细说！
-declare global {
-  const _: typeof lodash
-}
 ```
 
 ### 7. 改造 .vue 文件
@@ -398,68 +385,9 @@ export default class App extends Vue {
 ```
 其他vue修改如上~
 
-### 9. 还记得6. 让 ts 识别 .vue 里的全局变量_不能用吗？
-因为webpack并不认识它，需要在build/webpack.base.conf.js 稍作修改
-```
-...
-const config = require('../config')
-const webpack = require('webpack') // 新加
-const vueLoaderConfig = require('./vue-loader.conf')
-...
-
-entry: {
-    app: './src/main.ts',
-    // 新加
-    vendor: [
-        "lodash"
-    ]
-},
-// 新加
-plugins: [
-    new webpack.ProvidePlugin({
-        _: 'lodash'
-    })
-],
-output: {
-    path: config.build.assetsRoot,
-    filename: '[name].js',
-    publicPath: process.env.NODE_ENV === 'production' ?
-        config.build.assetsPublicPath : config.dev.assetsPublicPath
-},
 ```
 
-另外在vue使用this.$store 或者 this.$router需要声明，不然会爆红。虽然不影响使用，但是个人强迫症患者
-```
-<script lang="ts">
-import Vue from "vue";
-import Component from "vue-class-component";
-@Component({})
-export default class HelloWorld extends Vue {
-  msg: string = "Welcome to Your Vue-Typescript App";
-  $store: any;
-  mounted() {
-    let a = {
-      name: "zs"
-    };
-    this.$store.commit("addAuth", "zs1111");
-    console.log(_.cloneDeep(this.$store.getters));
-  }
-}
-</script>
-```
-
-如果使用element-ui this.$messige 等组件报错的话，在src/vue-shim.d.ts加入如下代码（如果同上声明可以使用的话就不需要添加了）：
-```
-// 声明全局方法
-declare module 'vue/types/vue' {
-  interface Vue {
-    $Message: any,
-    $Modal: any
-  }
-}
-```
-
-### 10. 想玩高端的附上三命大佬的两篇文章
+### 9. 想玩高端的附上三命大佬的两篇文章
 [vue+ts基础篇](https://segmentfault.com/a/1190000011744210)
 [vue+ts进阶篇](https://segmentfault.com/a/1190000011878086)
 
